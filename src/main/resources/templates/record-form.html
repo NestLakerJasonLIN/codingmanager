@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Record Form</title>
+</head>
+
+<body>
+    <div class="container">
+        <h3>Record Form</h3>
+        <a th:href="@{/records}">Back to Records List</a>
+        <hr>
+
+        <p class="h4 mb-4">Save Record</p>
+
+        <form action="#" th:action="@{/records/save}"
+              th:object="${record}" method="POST">
+
+            <!-- Add hidden form field to handle update -->
+            <input type="hidden" th:field="*{id}" />
+
+            <input type="text" th:field="*{number}"
+                   class="form-control mb-4 col-4" placeholder="Number">
+
+            <input type="text" th:field="*{name}"
+                   class="form-control mb-4 col-4" placeholder="Name">
+
+            <input type="text" th:field="*{level}"
+                   class="form-control mb-4 col-4" placeholder="Level">
+
+            <input type="text" th:field="*{link}"
+                   class="form-control mb-4 col-4" placeholder="Link">
+
+            <input type="text" th:field="*{tagType}"
+                   class="form-control mb-4 col-4" placeholder="Tag Type">
+
+            <input type="text" th:field="*{methodType}"
+                   class="form-control mb-4 col-4" placeholder="Method Type">
+
+            <input type="text" th:field="*{addDate}"
+                   class="form-control mb-4 col-4" placeholder="Add Date">
+
+            <button type="submit" class="btn btn-info col-2">Save</button>
+
+        </form>
+
+        <hr>
+
+    </div>
+</body>
+
+</html>

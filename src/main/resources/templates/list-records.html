@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Record Directory</title>
+</head>
+
+<body>
+
+    <h3>Record Directory</h3>
+    <a th:href="@{/}">Back to home</a>
+    <hr>
+
+    <a th:href="@{/records/showFormForAdd}"
+       class="btn btn-primary btn-sm mb-3">
+        Add Record
+    </a>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Number</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Link</th>
+                <th>Tag Type</th>
+                <th>Method Type</th>
+                <th>Add Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.id}"></td>
+                <td th:text="${record.number}"></td>
+                <td th:text="${record.name}"></td>
+                <td th:text="${record.level}"></td>
+                <td><a th:href="${record.link}" th:text="${record.link}"></a></td>
+                <td th:text="${record.tagType}"></td>
+                <td th:text="${record.methodType}"></td>
+                <td th:text="${record.addDate}"></td>
+                <td>
+                <div class="row">
+
+                    <div class="col-small">
+                    <form action="#" th:action="@{/records/showFormForUpdate}" method="POST">
+                        <input type="hidden" name="recordId" th:value="${record.id}" />
+                        <button type="submit" class="btn btn-info btn-sm ml-3 mr-1">Update</button>
+                    </form>
+                    </div>
+
+                    <div class="col-small">
+                    <form action="#" th:action="@{/records/delete}" method="POST">
+                        <input type="hidden" name="recordId" th:value="${record.id}" />
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="if (!(confirm('Are you sure you want to delete this record?'))) return false">
+                            Delete
+                        </button>
+                    </form>
+                    </div>
+                </div>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+</body>
+
+</html>

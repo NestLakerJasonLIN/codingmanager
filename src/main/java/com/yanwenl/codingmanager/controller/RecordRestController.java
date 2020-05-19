@@ -14,36 +14,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @Slf4j
-public class RecordRestController {
-
-    // Inject property
-    @Value("${info.app.name}")
-    private String appName;
-
-    private RecordService recordService;
+public class RecordRestController extends RecordBaseController {
 
     @Autowired
     public RecordRestController(RecordService theRecordService) {
-        recordService = theRecordService;
+        super(theRecordService);
     }
 
     @GetMapping("/records")
     public List<Record> getRecords(
             @RequestParam(required = false, defaultValue = "-1") int id,
             @RequestParam(required = false, defaultValue = "-1") int number) {
-
-        log.debug("request for getRecords: " +
-                "id: " + id + " number: " + number);
-
-        if (id < 0 && number < 0) {
-            return recordService.findAll();
-        } else if (id > 0) {
-            List<Record> ret = new ArrayList<>();
-            ret.add(recordService.findById(id));
-            return ret;
-        } else {
-            return recordService.findByNumber(number);
-        }
+        return getRecordsConditional(id, number);
     }
 
     @PostMapping("/records")
