@@ -10,10 +10,6 @@ import javax.persistence.*;
 @Data
 @ToString
 public class Record {
-    // TODO: use enum instead of string for level and tagType
-    public enum LEVEL {EASY, MEDIUM, HARD}
-    public enum TAG_TYPE {REFACTOR, OPTIMIZER, ANOTHER_SOLUTION, CORNER_CASE}
-    public enum METHOD_TYPE {double_pointer, pruned_backtrack}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +28,11 @@ public class Record {
     @Column(name="link")
     private String link;
 
-    @Column(name="tag_type")
-    private String tagType;
+    @Column(name="tag")
+    private String tag;
 
-    @Column(name="method_type")
-    private String methodType;
+    @Column(name="method")
+    private String method;
 
     @Column(name="add_date")
     private String addDate;

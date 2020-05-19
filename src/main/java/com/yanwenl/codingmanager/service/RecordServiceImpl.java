@@ -1,7 +1,7 @@
 package com.yanwenl.codingmanager.service;
 
 import com.yanwenl.codingmanager.exception.InvalidParametersException;
-import com.yanwenl.codingmanager.exception.RecordNotFoundException;
+import com.yanwenl.codingmanager.exception.ResourceNotFoundException;
 import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.repository.RecordRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class RecordServiceImpl implements RecordService {
         Optional<Record> result = recordRepository.findById(id);
 
         if (!result.isPresent()) {
-            throw new RecordNotFoundException(
+            throw new ResourceNotFoundException(
                     "Record id not found: " + id);
         } else {
             Record record = result.get();
@@ -74,7 +74,7 @@ public class RecordServiceImpl implements RecordService {
         Optional<Record> result = recordRepository.findById(id);
 
         if (!result.isPresent()) {
-            throw new RecordNotFoundException(
+            throw new ResourceNotFoundException(
                     "Record id not found (do not update): "
                             + id);
         } else {
@@ -93,7 +93,7 @@ public class RecordServiceImpl implements RecordService {
             log.info("Record is deleted: " + record);
             recordRepository.delete(record);
         } else {
-            throw new RecordNotFoundException(
+            throw new ResourceNotFoundException(
                     "Record id not found: " + id);
         }
     }

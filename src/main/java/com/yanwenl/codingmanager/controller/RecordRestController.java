@@ -1,24 +1,25 @@
 package com.yanwenl.codingmanager.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.yanwenl.codingmanager.model.Record;
+import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 
+//TODO: change url path
 @RestController
 @RequestMapping("/api")
 @Slf4j
 public class RecordRestController extends RecordBaseController {
 
     @Autowired
-    public RecordRestController(RecordService theRecordService) {
-        super(theRecordService);
+    public RecordRestController(RecordService theRecordService,
+                                LabelService theLabelService) {
+        super(theRecordService, theLabelService);
     }
 
     @GetMapping("/records")

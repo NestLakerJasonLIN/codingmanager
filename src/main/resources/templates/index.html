@@ -13,11 +13,15 @@
 
 <body>
 
-    <h3 th:text="'Welcome to ' + ${appName}"></h3>
+    <h3 th:text="'Welcome to ' + ${appName} + '!'"></h3>
     <hr>
 
     <p class="h4 mb-4">
-        Show all <a th:href="@{/records}">records</a>
+        Go to <a th:href="@{/record}">records</a>
+    </p>
+
+    <p class="h4 mb-4">
+        Go to <a th:href="@{/label}">labels</a>
     </p>
 </body>
 

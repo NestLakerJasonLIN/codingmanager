@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Label Form</title>
+</head>
+
+<body>
+    <div class="container">
+        <h3>Label Form</h3>
+        <p>
+            <a th:href="@{/}">Back to home</a>
+            &nbsp;
+            <a th:href="@{/label}">Back to label list</a>
+            &nbsp;
+            <a th:href="@{/record}">Back to record list</a>
+        </p>
+        <hr>
+
+        <p class="h4 mb-4">Save Record</p>
+
+        <form action="#" th:action="@{/label/save}" method="POST">
+
+            <!-- Add hidden form field to handle update -->
+            <input type="hidden" th:field="*{label.id}" />
+
+            <input type="text" th:field="*{label.field}"
+                   class="form-control mb-4 col-4" placeholder="Field">
+
+            <input type="text" th:field="*{label.type}"
+                   class="form-control mb-4 col-4" placeholder="Type">
+
+            <button type="submit" class="btn btn-info col-2">Save</button>
+
+        </form>
+
+        <hr>
+
+    </div>
+</body>
+
+</html>

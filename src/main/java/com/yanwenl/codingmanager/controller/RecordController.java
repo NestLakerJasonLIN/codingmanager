@@ -1,6 +1,8 @@
 package com.yanwenl.codingmanager.controller;
 
+import com.yanwenl.codingmanager.model.Label;
 import com.yanwenl.codingmanager.model.Record;
+import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,23 +13,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/record")
 @Slf4j
 public class RecordController extends RecordBaseController {
 
     @Autowired
-    public RecordController(RecordService theRecordService) {
-        super(theRecordService);
+    public RecordController(RecordService theRecordService,
+                            LabelService theLabelService) {
+        super(theRecordService, theLabelService);
     }
 
-    @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("appName", appName);
-        return "index";
-    }
-
-    @GetMapping("/records")
-    public String getRecords(Model model,
+    @GetMapping("")
+    public String get(Model model,
                              @RequestParam(required = false,
                                      defaultValue = "-1") int id,
                              @RequestParam(required = false,
@@ -37,26 +34,30 @@ public class RecordController extends RecordBaseController {
         return "list-records";
     }
 
-    @GetMapping("/records/showFormForAdd")
-    public String showForForAdd(Model model) {
+    @GetMapping("/showFormForAdd")
+    public String showFormForAdd(Model model) {
         Record record = new Record();
 
+        addLabelAttributesToModel(model);
         model.addAttribute("record", record);
+
+        log.debug("Model: " + model);
 
         return "record-form";
     }
 
-    @PostMapping("/records/showFormForUpdate")
+    @PostMapping("/showFormForUpdate")
     public String showFormForUpdate(Model model, @RequestParam("recordId") int recordId) {
         Record record = recordService.findById(recordId);
 
+        addLabelAttributesToModel(model);
         model.addAttribute("record", record);
 
         return "record-form";
     }
 
-    @PostMapping("/records/save")
-    public String saveRecords(@ModelAttribute("record") Record record) {
+    @PostMapping("/save")
+    public String save(@ModelAttribute("record") Record record) {
         log.debug("Try to save record: " + record);
 
         if (record.getId() == 0) {
@@ -65,13 +66,25 @@ public class RecordController extends RecordBaseController {
             recordService.update(record);
         }
 
-        return "redirect:/records";
+        return "redirect:/record";
     }
 
-    @PostMapping("/records/delete")
+    @PostMapping("/delete")
     public String delete(@RequestParam("recordId") int id) {
         recordService.deleteById(id);
 
-        return "redirect:/records";
+        return "redirect:/record";
+    }
+
+    private void addLabelAttributesToModel(Model model) {
+        List<String> fields = labelService.findDistinctFields();
+
+        log.debug("Find distinct fields: " + fields);
+
+        for (String field : fields) {
+            List<Label> labelsByField = labelService.findByField(field);
+            log.debug("Find labelsByField: " + labelsByField);
+            model.addAttribute(field + "Label", labelsByField);
+        }
     }
 }

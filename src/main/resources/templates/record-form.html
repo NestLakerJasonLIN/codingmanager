@@ -15,36 +15,56 @@
 <body>
     <div class="container">
         <h3>Record Form</h3>
-        <a th:href="@{/records}">Back to Records List</a>
+        <p>
+            <a th:href="@{/}">Back to home</a>
+            &nbsp;
+            <a th:href="@{/label}">Back to label list</a>
+            &nbsp;
+            <a th:href="@{/record}">Back to record list</a>
+        </p>
         <hr>
 
         <p class="h4 mb-4">Save Record</p>
 
-        <form action="#" th:action="@{/records/save}"
-              th:object="${record}" method="POST">
+        <form action="#" th:action="@{/record/save}" method="POST">
 
             <!-- Add hidden form field to handle update -->
-            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{record.id}" />
 
-            <input type="text" th:field="*{number}"
+            <input type="text" th:field="*{record.number}"
                    class="form-control mb-4 col-4" placeholder="Number">
 
-            <input type="text" th:field="*{name}"
+            <input type="text" th:field="*{record.name}"
                    class="form-control mb-4 col-4" placeholder="Name">
 
-            <input type="text" th:field="*{level}"
-                   class="form-control mb-4 col-4" placeholder="Level">
+            <select name="level" class="form-control mb-4 col-4">
+                <option th:if="${record.getLevel() == null}" disabled selected>Please select a level...</option>
+                <option th:unless="${record.getLevel() == null}" hidden selected
+                        th:value="${record.getLevel()}" th:text="${record.getLevel()}"></option>
+                <option th:each="levelOpt : ${levelLabel}"
+                        th:value="${levelOpt.getType()}" th:text="${levelOpt.getType()}"></option>
+            </select>
 
-            <input type="text" th:field="*{link}"
+            <input type="text" th:field="*{record.link}"
                    class="form-control mb-4 col-4" placeholder="Link">
 
-            <input type="text" th:field="*{tagType}"
-                   class="form-control mb-4 col-4" placeholder="Tag Type">
+            <select name="tag" class="form-control mb-4 col-4">
+                <option th:if="${record.getTag() == null}" disabled selected>Please select a tag type...</option>
+                <option th:unless="${record.getTag() == null}" hidden selected
+                        th:value="${record.getTag()}" th:text="${record.getTag()}"></option>
+                <option th:each="tagOpt : ${tagLabel}"
+                        th:value="${tagOpt.getType()}" th:text="${tagOpt.getType()}"></option>
+            </select>
 
-            <input type="text" th:field="*{methodType}"
-                   class="form-control mb-4 col-4" placeholder="Method Type">
+            <select name="method" class="form-control mb-4 col-4">
+                <option th:if="${record.getMethod() == null}" disabled selected>Please select a method type...</option>
+                <option th:unless="${record.getMethod() == null}" hidden selected
+                        th:value="${record.getMethod()}" th:text="${record.getMethod()}"></option>
+                <option th:each="methodOpt : ${methodLabel}"
+                        th:value="${methodOpt.getType()}" th:text="${methodOpt.getType()}"></option>
+            </select>
 
-            <input type="text" th:field="*{addDate}"
+            <input type="text" th:field="*{record.addDate}"
                    class="form-control mb-4 col-4" placeholder="Add Date">
 
             <button type="submit" class="btn btn-info col-2">Save</button>
