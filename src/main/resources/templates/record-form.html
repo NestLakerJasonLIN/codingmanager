@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="/css/bootstrap-datepicker.min.css">
+    <script src="/js/bootstrap-datepicker.min.js"></script>
 <!--    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>-->
 <!--    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />-->
 
@@ -45,7 +46,20 @@
             <input type="text" th:field="*{record.link}"
                    class="form-control mb-4 col-4" placeholder="Link">
 
-            <input type="text" th:field="*{record.addDate}"
+            <select th:field="${record.level}" class="form-control mb-4 col-4">
+                <option th:if="*{record.id == 0}"
+                        th:value="0"
+                        disabled selected
+                        th:text="'Please select a level'"></option>
+                <option th:unless="*{record.id == 0}" hidden selected
+                        th:value="${record.level}"
+                        th:text="${record.level}">
+                </option>
+                <option th:each="label : ${levelLabels}"
+                        th:value="${label.type}" th:text="${label.type}"></option>
+            </select>
+
+            <input type="text" th:field="*{record.addDate}" id="datepicker"
                    class="form-control mb-4 col-4" placeholder="Add Date">
 
             <button type="submit" class="btn btn-info col-2">Save</button>
@@ -56,12 +70,12 @@
 
     </div>
 
-<!--    TODO: fix datepicker input date formater-->
-<!--    <script>-->
-<!--        $('#datepicker').datepicker({-->
-<!--            uiLibrary: 'bootstrap4'-->
-<!--        });-->
-<!--    </script>-->
+<!--    TODO: fix datepicker input date formatter-->
+    <script>
+        console.log("!!!!");
+        $('#datepicker input').datepicker({
+        });
+    </script>
 </body>
 
 </html>

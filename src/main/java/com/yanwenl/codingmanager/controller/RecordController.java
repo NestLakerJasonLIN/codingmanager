@@ -47,7 +47,10 @@ public class RecordController extends RecordBaseController {
     public String showFormForAdd(Model model) {
         Record record = new Record();
 
+        List<Label> levelLabels = labelService.findByField("level");
+
         model.addAttribute("record", record);
+        model.addAttribute("levelLabels", levelLabels);
 
         log.debug("Model: " + model);
 
@@ -58,7 +61,10 @@ public class RecordController extends RecordBaseController {
     public String showFormForUpdate(Model model, @RequestParam("recordId") int recordId) {
         Record record = recordService.findById(recordId);
 
+        List<Label> levelLabels = labelService.findByField("level");
+
         model.addAttribute("record", record);
+        model.addAttribute("levelLabels", levelLabels);
 
         return "record-form";
     }

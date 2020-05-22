@@ -64,6 +64,10 @@ public abstract class RecordBaseController extends BaseController {
 
         for (Integer labelId : labelIds) {
             Label label = labelService.findById(labelId);
+
+            // Skip level labels
+            if (label.getField().equals("level")) continue;
+
             labelByField.computeIfAbsent(label.getField(),
                     k -> new ArrayList<>()).add(label);
         }

@@ -38,6 +38,7 @@
                     <th>ID</th>
                     <th>Number</th>
                     <th>Name</th>
+                    <th>Level</th>
                     <th>Add Date</th>
                     <th>Action</th>
                 </tr>
@@ -48,6 +49,7 @@
                     <td th:text="${record.id}"></td>
                     <td th:text="${record.number}"></td>
                     <td><a th:href="${record.link}" th:text="${record.name}"></a></td>
+                    <td th:text="${record.level}"></td>
                     <td th:text="${record.addDate}"></td>
                     <td>
                         <div class="row">
@@ -94,13 +96,6 @@
                                th:text="${label.getType()}"
                                th:href="@{/tag/showFormForUpdate(recordId=${record.id}, labelId=${label.id})}"
                                class="badge badge-pill badge-primary mr-2 mb-2 mt-2">
-                            </a>
-
-                            <a th:if="${field == 'level'}"
-                               th:each="label : ${labels.get(field)}"
-                               th:href="@{/tag/showFormForUpdate(recordId=${record.id}, labelId=${label.id})}"
-                               th:text="${label.getType()}"
-                               class="badge badge-pill badge-warning mr-2 mb-2 mt-2">
                             </a>
 
                             <a th:if="${field == 'state'}"

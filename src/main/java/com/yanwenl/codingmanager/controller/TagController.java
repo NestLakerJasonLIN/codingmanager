@@ -95,6 +95,9 @@ public class TagController extends TagBaseController {
         Map<String, List<Label>> labelByField = new HashMap<>();
 
         for (String field : fields) {
+            // Skip level labels
+            if (field.equals("level")) continue;
+
             List<Label> list = labelService.findByField(field);
             labelByField.put(field, list);
         }

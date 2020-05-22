@@ -27,4 +27,7 @@ public class Record {
 
     @Column(name="add_date")
     private String addDate;
+
+    @Column(name="level")
+    private String level;
 }
