@@ -51,6 +51,16 @@ public class RecordServiceImpl implements RecordService {
     // Currently allow duplicate add
     @Override
     public void add(Record record) {
+        // Skip existed record with same number
+        int number = record.getNumber();
+
+        List<Record> existedRecords = recordRepository.findRecordByNumber(number);
+
+        if (existedRecords != null && existedRecords.size() > 0) {
+            log.warn("Record already existed (do not add): " + record);
+            return;
+        }
+
         log.info("Record is added: " + record);
 
         record.setId(0);

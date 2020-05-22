@@ -55,6 +55,20 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
 	public void add(Label label) {
+        String field = label.getField();
+        String type = label.getType();
+
+        List<Label> existedLabels = labelRepository.findLabelByField(field);
+
+        if (existedLabels != null) {
+            for (Label existedLabel : existedLabels) {
+                if (existedLabel.getType().equals(type)) {
+                    log.warn("Label already existed (do not add): " + label);
+                    return;
+                }
+            }
+        }
+
         log.info("Label is added: " + label);
 
         // TODO: check duplicate

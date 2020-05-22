@@ -71,6 +71,18 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void add(Tag tag) {
+        // Check if tag already existed
+        List<Tag> existedTags = tagRepository.findByRecordId(tag.getRecordId());
+
+        if (existedTags != null) {
+            for (Tag existedTag : existedTags) {
+                if (existedTag.getLabelId().equals(tag.getLabelId())) {
+                    log.warn("Same tag already existed (do not add): " + tag);
+                    return;
+                }
+            }
+        }
+
         log.info("Tag is added: " + tag);
 
         tag.setId(0);
