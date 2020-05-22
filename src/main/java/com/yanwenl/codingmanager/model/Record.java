@@ -22,17 +22,8 @@ public class Record {
     @Column(name="number")
     private Integer number;
 
-    @Column(name="level")
-    private String level;
-
     @Column(name="link")
     private String link;
-
-    @Column(name="tag")
-    private String tag;
-
-    @Column(name="method")
-    private String method;
 
     @Column(name="add_date")
     private String addDate;

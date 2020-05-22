@@ -4,6 +4,7 @@ import com.yanwenl.codingmanager.model.Label;
 import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
+import com.yanwenl.codingmanager.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/record")
@@ -19,8 +21,9 @@ public class RecordController extends RecordBaseController {
 
     @Autowired
     public RecordController(RecordService theRecordService,
-                            LabelService theLabelService) {
-        super(theRecordService, theLabelService);
+                            LabelService theLabelService,
+                            TagService tagService) {
+        super(theRecordService, theLabelService, tagService);
     }
 
     @GetMapping("")
@@ -30,7 +33,13 @@ public class RecordController extends RecordBaseController {
                              @RequestParam(required = false,
                                      defaultValue = "-1") int number) {
         List<Record> records = getRecordsConditional(id, number);
+        Map<Record, Map<String, List<Label>>>
+                labelGroupByFieldGroupByRecord = findLabelGroupByRecord();
+
         model.addAttribute("records", records);
+        model.addAttribute("labelGroupByFieldGroupByRecord",
+                labelGroupByFieldGroupByRecord);
+
         return "list-records";
     }
 
@@ -38,7 +47,6 @@ public class RecordController extends RecordBaseController {
     public String showFormForAdd(Model model) {
         Record record = new Record();
 
-        addLabelAttributesToModel(model);
         model.addAttribute("record", record);
 
         log.debug("Model: " + model);
@@ -50,7 +58,6 @@ public class RecordController extends RecordBaseController {
     public String showFormForUpdate(Model model, @RequestParam("recordId") int recordId) {
         Record record = recordService.findById(recordId);
 
-        addLabelAttributesToModel(model);
         model.addAttribute("record", record);
 
         return "record-form";
@@ -74,17 +81,5 @@ public class RecordController extends RecordBaseController {
         recordService.deleteById(id);
 
         return "redirect:/record";
-    }
-
-    private void addLabelAttributesToModel(Model model) {
-        List<String> fields = labelService.findDistinctFields();
-
-        log.debug("Find distinct fields: " + fields);
-
-        for (String field : fields) {
-            List<Label> labelsByField = labelService.findByField(field);
-            log.debug("Find labelsByField: " + labelsByField);
-            model.addAttribute(field + "Label", labelsByField);
-        }
     }
 }

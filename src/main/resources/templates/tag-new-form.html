@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+    <title>Label Form</title>
+</head>
+
+<body>
+    <div class="container">
+        <h3>Tag Form</h3>
+        <p>
+            <a th:href="@{/}">Home</a>
+            &nbsp;
+            <a th:href="@{/label}">Label list</a>
+            &nbsp;
+            <a th:href="@{/record}">Record list</a>
+        </p>
+        <hr>
+
+        <p class="h4 mb-4">Add Tag</p>
+
+        <div class="container">
+            <ul class="nav nav-tabs" >
+                <li class="nav-item" th:each="field : ${labelByField.keySet()}">
+                    <a class="nav-link" th:classappend="${field == 'level'} ? 'active'" th:href="@{'#'+ ${field}}" data-toggle="tab"><label th:text="${field}"></label></a>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3" >
+                <div class="tab-pane fade" th:classappend="${field == 'level'} ? 'show active'" th:id="${field}" th:each="field : ${labelByField.keySet()}" >
+                    <form action="#" th:action="@{/tag/save}" method="POST" th:object="${tag}">
+
+                        <!-- Add hidden form field to handle update -->
+                        <input type="hidden" th:field="*{id}" />
+                        <input type="hidden" th:field="*{recordId}" />
+
+                        <select name="labelId" id="labelId" th:with="labelId=*{labelId}" class="form-control mb-4 col-4">
+                            <option th:if="*{labelId == null}" th:value="0" disabled selected th:text="'Please select a ' + ${field}"></option>
+                            <option th:each="label : ${labelByField.get(field)}"
+                                    th:value="${label.id}" th:text="${label.type}"></option>
+                        </select>
+
+                        <button type="submit" class="btn btn-info col-2">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

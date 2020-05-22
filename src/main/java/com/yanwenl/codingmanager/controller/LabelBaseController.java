@@ -10,7 +10,6 @@ import java.util.List;
 public class LabelBaseController extends BaseController {
     LabelService labelService;
 
-    @Autowired
     public LabelBaseController(LabelService labelService) {
         this.labelService = labelService;
     }

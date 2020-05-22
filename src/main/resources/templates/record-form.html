@@ -8,6 +8,11 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+<!--    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>-->
+<!--    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />-->
 
     <title>Record Form</title>
 </head>
@@ -16,11 +21,11 @@
     <div class="container">
         <h3>Record Form</h3>
         <p>
-            <a th:href="@{/}">Back to home</a>
+            <a th:href="@{/}">Home</a>
             &nbsp;
-            <a th:href="@{/label}">Back to label list</a>
+            <a th:href="@{/label}">Label list</a>
             &nbsp;
-            <a th:href="@{/record}">Back to record list</a>
+            <a th:href="@{/record}">Record list</a>
         </p>
         <hr>
 
@@ -37,32 +42,8 @@
             <input type="text" th:field="*{record.name}"
                    class="form-control mb-4 col-4" placeholder="Name">
 
-            <select name="level" class="form-control mb-4 col-4">
-                <option th:if="${record.getLevel() == null}" disabled selected>Please select a level...</option>
-                <option th:unless="${record.getLevel() == null}" hidden selected
-                        th:value="${record.getLevel()}" th:text="${record.getLevel()}"></option>
-                <option th:each="levelOpt : ${levelLabel}"
-                        th:value="${levelOpt.getType()}" th:text="${levelOpt.getType()}"></option>
-            </select>
-
             <input type="text" th:field="*{record.link}"
                    class="form-control mb-4 col-4" placeholder="Link">
-
-            <select name="tag" class="form-control mb-4 col-4">
-                <option th:if="${record.getTag() == null}" disabled selected>Please select a tag type...</option>
-                <option th:unless="${record.getTag() == null}" hidden selected
-                        th:value="${record.getTag()}" th:text="${record.getTag()}"></option>
-                <option th:each="tagOpt : ${tagLabel}"
-                        th:value="${tagOpt.getType()}" th:text="${tagOpt.getType()}"></option>
-            </select>
-
-            <select name="method" class="form-control mb-4 col-4">
-                <option th:if="${record.getMethod() == null}" disabled selected>Please select a method type...</option>
-                <option th:unless="${record.getMethod() == null}" hidden selected
-                        th:value="${record.getMethod()}" th:text="${record.getMethod()}"></option>
-                <option th:each="methodOpt : ${methodLabel}"
-                        th:value="${methodOpt.getType()}" th:text="${methodOpt.getType()}"></option>
-            </select>
 
             <input type="text" th:field="*{record.addDate}"
                    class="form-control mb-4 col-4" placeholder="Add Date">
@@ -74,6 +55,13 @@
         <hr>
 
     </div>
+
+<!--    TODO: fix datepicker input date formater-->
+<!--    <script>-->
+<!--        $('#datepicker').datepicker({-->
+<!--            uiLibrary: 'bootstrap4'-->
+<!--        });-->
+<!--    </script>-->
 </body>
 
 </html>

@@ -10,6 +10,7 @@ public interface LabelRepository extends JpaRepository<Label, Integer> {
 
     List<Label> findLabelByField(String field);
 
+    //TODO: distinct not needed
     @Query("SELECT DISTINCT field FROM Label")
     List<String> findDistinctFields();
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 @Slf4j
 public class RecordServiceImpl implements RecordService {
 
@@ -24,13 +25,11 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    @Transactional
     public List<Record> findAll() {
         return recordRepository.findAll();
     }
 
     @Override
-    @Transactional
     public Record findById(int id) {
         Optional<Record> result = recordRepository.findById(id);
 
@@ -45,14 +44,12 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    @Transactional
     public List<Record> findByNumber(int number) {
         return recordRepository.findRecordByNumber(number);
     }
 
     // Currently allow duplicate add
     @Override
-    @Transactional
     public void add(Record record) {
         log.info("Record is added: " + record);
 
@@ -62,7 +59,6 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    @Transactional
     public void update(Record record) {
         // ID field existed should not be zero in update
         int id = record.getId();
@@ -84,7 +80,6 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    @Transactional
     public void deleteById(int id) {
         Optional<Record> result = recordRepository.findById(id);
 

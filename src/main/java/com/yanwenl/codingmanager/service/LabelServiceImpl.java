@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 @Slf4j
 public class LabelServiceImpl implements LabelService {
 
@@ -24,14 +25,12 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-	@Transactional
-    public List<Label> findAll() {
+	public List<Label> findAll() {
         return labelRepository.findAll();
     }
 
     @Override
-	@Transactional
-    public Label findById(int id) {
+	public Label findById(int id) {
         Optional<Label> result = labelRepository.findById(id);
 
         if (!result.isPresent()) {
@@ -45,20 +44,17 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    @Transactional
     public List<String> findDistinctFields() {
         return labelRepository.findDistinctFields();
     }
 
     @Override
-	@Transactional
-    public List<Label> findByField(String field) {
+	public List<Label> findByField(String field) {
         return labelRepository.findLabelByField(field);
     }
 
     @Override
-	@Transactional
-    public void add(Label label) {
+	public void add(Label label) {
         log.info("Label is added: " + label);
 
         // TODO: check duplicate
@@ -69,8 +65,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-	@Transactional
-    public void update(Label label) {
+	public void update(Label label) {
         // ID field existed should not be zero in update
         int id = label.getId();
         if (id == 0) {
@@ -94,8 +89,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-	@Transactional
-    public void deleteById(int id) {
+	public void deleteById(int id) {
         Optional<Label> result = labelRepository.findById(id);
 
         if (result.isPresent()) {
