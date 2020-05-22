@@ -14,6 +14,8 @@ public interface LabelService {
 
     List<Label> findByField(String field);
 
+    List<Label> findByType(String type);
+
     void add(Label label);
 
     void update(Label label);

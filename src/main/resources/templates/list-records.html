@@ -13,8 +13,8 @@
 </head>
 
 <body>
-
     <div class="col"></div>
+
     <div class="col-8">
         <h3>Record Directory</h3>
         <p>
@@ -27,9 +27,21 @@
         <hr>
 
         <a th:href="@{/record/showFormForAdd}"
-           class="btn btn-primary btn-sm mb-3">
+           class="btn btn-primary btn mb-3">
             New record
         </a>
+
+        <form action="#" th:action="@{/record/search}" method="POST">
+            <div class="input-group mb-3">
+                <input name="keyword"
+                       type="text" class="form-control col-5">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary ml-3" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <hr>
 
         <div th:each="record : ${records}">
             <table class="table table-bordered table-striped">
@@ -90,27 +102,36 @@
                         <!-- field -->
                         <p th:text="${field} + ':'" class="mr-2 mb-0"></p>
                         <!-- list of labels -->
-                        <h4>
-                            <a th:if="${field == 'method'}"
-                               th:each="label : ${labels.get(field)}"
+                        <h4 th:if="${field == 'method'}">
+                            <a th:each="label : ${labels.get(field)}"
                                th:text="${label.getType()}"
                                th:href="@{/tag/showFormForUpdate(recordId=${record.id}, labelId=${label.id})}"
                                class="badge badge-pill badge-primary mr-2 mb-2 mt-2">
                             </a>
+<!--                            <a th:href="@{/tag/showFormForAdd(recordId=${record.id})}"-->
+<!--                               class="badge badge-pill badge-light mr-2 mb-2 mt-2">-->
+<!--                                Add new label-->
+<!--                            </a>-->
+                        </h4>
 
-                            <a th:if="${field == 'state'}"
-                               th:each="label : ${labels.get(field)}"
+                        <h4 th:if="${field == 'state'}">
+                            <a th:each="label : ${labels.get(field)}"
                                th:href="@{/tag/showFormForUpdate(recordId=${record.id}, labelId=${label.id})}"
                                th:text="${label.getType()}"
                                class="badge badge-pill badge-success mr-2 mb-2 mt-2">
                             </a>
+<!--                            <a th:href="@{/tag/showFormForAdd(recordId=${record.id})}"-->
+<!--                               class="badge badge-pill badge-light mr-2 mb-2 mt-2">-->
+<!--                                Add new label-->
+<!--                            </a>-->
                         </h4>
                     </div>
                 </div>
-                <hr>
             </div>
+            <hr>
         </div>
     </div>
+
     <div class="col"></div>
 </body>
 

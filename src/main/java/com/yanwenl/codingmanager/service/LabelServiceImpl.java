@@ -54,6 +54,11 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
+    public List<Label> findByType(String type) {
+        return labelRepository.findLabelByType(type);
+    }
+
+    @Override
 	public void add(Label label) {
         String field = label.getField();
         String type = label.getType();
