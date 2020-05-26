@@ -2,6 +2,7 @@ package com.yanwenl.codingmanager.controller;
 
 import com.yanwenl.codingmanager.model.Label;
 import com.yanwenl.codingmanager.service.LabelService;
+import com.yanwenl.codingmanager.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,8 +17,9 @@ import java.util.List;
 public class LabelController extends LabelBaseController {
 
     @Autowired
-    public LabelController(LabelService labelService) {
-        super(labelService);
+    public LabelController(LabelService labelService,
+                           TagService tagService) {
+        super(labelService, tagService);
     }
 
     @GetMapping("")
@@ -70,6 +72,7 @@ public class LabelController extends LabelBaseController {
     @PostMapping("/delete")
     public String delete(@RequestParam("labelId") int id) {
         labelService.deleteById(id);
+        tagService.deleteByLabelId(id);
 
         return "redirect:/label";
     }

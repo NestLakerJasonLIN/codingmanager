@@ -3,6 +3,7 @@ package com.yanwenl.codingmanager.controller;
 import com.yanwenl.codingmanager.model.Label;
 import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.model.Tag;
+import com.yanwenl.codingmanager.model.TagForm;
 import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
 import com.yanwenl.codingmanager.service.TagService;
@@ -71,21 +72,34 @@ public class TagController extends TagBaseController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("tag") Tag tag) {
-        log.debug("Try to save tag: " + tag);
+    public String save(@ModelAttribute("tagForm") TagForm tagForm) {
+        log.debug("Try to save tagForm: " + tagForm);
 
-        if (tag.getId() == 0) {
+        int recordId = tagForm.getRecordId();
+        int oldLabelId = tagForm.getOldLabelId();
+        int newLabelId = tagForm.getNewLabelId();
+
+        if (oldLabelId == 0) {
+            Tag tag = new Tag();
+            tag.setRecordId(recordId);
+            tag.setLabelId(newLabelId);
             tagService.add(tag);
         } else {
-            tagService.update(tag);
+            Tag oldTag = tagService.findByRecordIdAndLabelId(recordId, oldLabelId);
+            oldTag.setLabelId(newLabelId);
+            tagService.update(oldTag);
         }
 
         return "redirect:/record";
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam("tagId") int id) {
-        tagService.deleteById(id);
+    public String delete(@RequestParam("recordId") int recordId,
+                         @RequestParam("labelId") int labelId) {
+        log.debug("Try to delete tag with record Id and label Id: "
+                + recordId + " : " + labelId);
+
+        tagService.deleteByRecordIdAndLabelId(recordId, labelId);
 
         return "redirect:/record";
     }

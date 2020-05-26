@@ -88,15 +88,67 @@
     <section class="jumbotron text-center bg">
     </section>
 
-    <!-- new record & search bar -->
+    <!-- New record & Search bar -->
     <section class="text-center mt-3">
         <div class="container d-flex align-items-center">
             <p>
-                <!-- new record -->
-                <a th:href="@{/record/showFormForAdd}"
-                   class="btn btn-outline-secondary my-2">
+                <!-- New record -->
+                <a class="btn btn-outline-secondary my-2"
+                   data-toggle="modal" data-target="#newRecordModal">
                     <img src="/images/plus.svg" alt="plus icon" class="iconic-plus">
                 </a>
+
+                <!-- New record modal -->
+                <div class="modal fade" id="newRecordModal"
+                     tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="updateModalLabel">New Record</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
+                                    <!-- Add hidden form field to handle update -->
+                                    <input type="hidden" th:field="*{id}"/>
+
+                                    <input type="text" th:field="*{number}"
+                                           class="form-control mb-4 col-8" placeholder="Number">
+
+                                    <input type="text" th:field="*{name}"
+                                           class="form-control mb-4 col-8" placeholder="Name">
+
+                                    <input type="text" th:field="*{link}"
+                                           class="form-control mb-4 col-8" placeholder="Link">
+
+                                    <select th:field="*{level}"
+                                            class="form-control mb-4 col-8">
+                                        <option th:value="0"
+                                                disabled selected
+                                                th:text="'Please select a level'"></option>
+
+                                        </option>
+                                        <option th:each="label : ${levelLabels}"
+                                                th:value="${label.type}" th:text="${label.type}"></option>
+                                    </select>
+
+                                    <div class="input-append date" id="datepicker_new" data-date-format="yyyy-mm-dd">
+                                        <input th:field="*{addDate}"
+                                               class="form-control mb-4 col-8" size="16" type="text"/>
+                                        <span class="add-on"><i class="icon-th"></i></span>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- search bar -->
                 <form action="#" th:action="@{/record/search}" method="POST">
@@ -112,6 +164,7 @@
         </div>
     </section>
 
+    <!-- Record card -->
     <div class="album py-5 bg-light">
         <div class="container">
 
@@ -133,25 +186,103 @@
                                         <div th:if="${field == 'method'}">
                                             <a th:each="label : ${labels.get(field)}"
                                                th:text="${label.getType()}"
-                                               th:href="@{/tag/showFormForUpdate(recordId=${record.id}, labelId=${label.id})}"
+                                               data-toggle="modal" data-target="#updateTag"
+                                               href="#updateTag"
+                                               th:attrappend="data-target=${record.id + '-' + label.id}"
                                                class="badge badge-pill badge-primary mr-2 mb-2 mt-2">
                                             </a>
-                                            <!--                            <a th:href="@{/tag/showFormForAdd(recordId=${record.id})}"-->
-                                            <!--                               class="badge badge-pill badge-light mr-2 mb-2 mt-2">-->
-                                            <!--                                Add new label-->
-                                            <!--                            </a>-->
+                                            <div th:each="label : ${labels.get(field)}"
+                                                 class="modal fade" id="updateTag"
+                                                 tabindex="-1" role="dialog" aria-labelledby="tagModalLabel" aria-hidden="true"
+                                                 th:attrappend="id=${record.id + '-' + label.id}">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="tagModalLabel">Update Label</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="#" th:action="@{/tag/delete}" method="POST" class="mb-3">
+                                                                <input type="hidden" name="recordId" th:value="${record.id}" />
+                                                                <input type="hidden" name="labelId" th:value="${label.id}" />
+                                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                                        onclick="if (!(confirm('Are you sure you want to delete this tag?'))) return false">
+                                                                    Delete this tag
+                                                                </button>
+                                                            </form>
+
+                                                            <form action="#" th:action="@{/tag/save}" method="POST" th:object="${tagForm}">
+                                                                <!-- Add hidden form field to handle update -->
+                                                                <input type="hidden" th:value="${record.id}" th:name="recordId" th:id="recordId"/>
+                                                                <input type="hidden" th:value="${label.id}" th:name="oldLabelId" th:id="oldLabelId"/>
+
+                                                                <select th:value="${label.id}" th:name="newLabelId" th:id="newLabelId"
+                                                                        class="form-control mb-4 col-8">
+                                                                    <option hidden selected
+                                                                            th:value="${label.type}" th:text="${label.type}"></option>
+                                                                    <option th:each="optLabel : ${labelByField.get(label.field)}"
+                                                                            th:value="${optLabel.id}" th:text="${optLabel.type}"></option>
+                                                                </select>
+
+                                                                <button type="submit" class="btn btn-info col-2">Save</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div th:if="${field == 'state'}">
                                             <a th:each="label : ${labels.get(field)}"
-                                               th:href="@{/tag/showFormForUpdate(recordId=${record.id}, labelId=${label.id})}"
                                                th:text="${label.getType()}"
+                                               data-toggle="modal" data-target="#updateTag"
+                                               href="#updateTag"
+                                               th:attrappend="data-target=${record.id + '-' + label.id}"
                                                class="badge badge-pill badge-success mr-2 mb-2 mt-2">
                                             </a>
-                                            <!--                            <a th:href="@{/tag/showFormForAdd(recordId=${record.id})}"-->
-                                            <!--                               class="badge badge-pill badge-light mr-2 mb-2 mt-2">-->
-                                            <!--                                Add new label-->
-                                            <!--                            </a>-->
+                                            <div th:each="label : ${labels.get(field)}"
+                                                 class="modal fade" id="updateTag"
+                                                 tabindex="-1" role="dialog" aria-labelledby="tagModalLabel" aria-hidden="true"
+                                                 th:attrappend="id=${record.id + '-' + label.id}">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="tagModalLabel">Update Label</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="#" th:action="@{/tag/delete}" method="POST" class="mb-3">
+                                                                <input type="hidden" name="recordId" th:value="${record.id}" />
+                                                                <input type="hidden" name="labelId" th:value="${label.id}" />
+                                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                                        onclick="if (!(confirm('Are you sure you want to delete this tag?'))) return false">
+                                                                    Delete this tag
+                                                                </button>
+                                                            </form>
+
+                                                            <form action="#" th:action="@{/tag/save}" method="POST" th:object="${tagForm}">
+                                                                <!-- Add hidden form field to handle update -->
+                                                                <input type="hidden" th:value="${record.id}" th:name="recordId" th:id="recordId"/>
+                                                                <input type="hidden" th:value="${label.id}" th:name="oldLabelId" th:id="oldLabelId"/>
+
+                                                                <select th:value="${label.id}" th:name="newLabelId" th:id="newLabelId"
+                                                                        class="form-control mb-4 col-8">
+                                                                    <option hidden selected
+                                                                            th:value="${label.type}" th:text="${label.type}"></option>
+                                                                    <option th:each="optLabel : ${labelByField.get(label.field)}"
+                                                                            th:value="${optLabel.id}" th:text="${optLabel.type}"></option>
+                                                                </select>
+
+                                                                <button type="submit" class="btn btn-info col-2">Save</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -161,81 +292,63 @@
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <div class="btn-group">
                                     <!-- Update -->
-                                    <form action="#" th:action="@{/record/save}" method="POST">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                                                data-toggle="modal" data-target="#updateModal"
-                                                th:attrappend="data-target=${record.id}">
-                                            Update
-                                        </button>
-<!--                                        <button type="button" class="btn btn-sm btn-outline-secondary update-modal"-->
-<!--                                                href="/html/record-form.html">-->
-<!--                                            Update-->
-<!--                                        </button>-->
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            data-toggle="modal" data-target="#updateModal"
+                                            th:attrappend="data-target=${record.id}">
+                                        Update
+                                    </button>
 
-                                        <!-- Update modal -->
-                                        <div class="modal fade" id="updateModal"
-                                             tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true"
-                                             th:attrappend="id=${record.id}">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="updateModalLabel">Update Record</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
-                                                            <!-- Add hidden form field to handle update -->
-                                                            <input type="hidden" th:value="${record.id}" th:name="id" th:id="id"/>
+                                    <!-- Update modal -->
+                                    <div class="modal fade" id="updateModal"
+                                         tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true"
+                                         th:attrappend="id=${record.id}">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="updateModalLabel">Update Record</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
+                                                        <!-- Add hidden form field to handle update -->
+                                                        <input type="hidden" th:value="${record.id}" th:name="id" th:id="id"/>
 
-                                                            <input type="text" th:value="${record.number}" th:name="number" th:id="number"
-                                                                   class="form-control mb-4 col-8" placeholder="Number">
+                                                        <input type="text" th:value="${record.number}" th:name="number" th:id="number"
+                                                               class="form-control mb-4 col-8" placeholder="Number">
 
-                                                            <input type="text" th:value="${record.name}" th:name="name" th:id="name"
-                                                                   class="form-control mb-4 col-8" placeholder="Name">
+                                                        <input type="text" th:value="${record.name}" th:name="name" th:id="name"
+                                                               class="form-control mb-4 col-8" placeholder="Name">
 
-                                                            <input type="text" th:value="${record.link}" th:name="link" th:id="link"
-                                                                   class="form-control mb-4 col-8" placeholder="Link">
+                                                        <input type="text" th:value="${record.link}" th:name="link" th:id="link"
+                                                               class="form-control mb-4 col-8" placeholder="Link">
 
-                                                            <select th:value="${record.level}" th:name="level" th:id="level"
-                                                                    class="form-control mb-4 col-8">
-                                                                <option th:if="${record.id == 0}"
-                                                                        th:value="0"
-                                                                        disabled selected
-                                                                        th:text="'Please select a level'"></option>
-                                                                <option th:unless="${record.id == 0}" hidden selected
-                                                                        th:value="${record.level}"
-                                                                        th:text="${record.level}">
-                                                                </option>
-                                                                <option th:each="label : ${levelLabels}"
-                                                                        th:value="${label.type}" th:text="${label.type}"></option>
-                                                            </select>
+                                                        <select th:value="${record.level}" th:name="level" th:id="level"
+                                                                class="form-control mb-4 col-8">
+                                                            <option hidden selected
+                                                                    th:value="${record.level}"
+                                                                    th:text="${record.level}">
+                                                            </option>
+                                                            <option th:each="label : ${levelLabels}"
+                                                                    th:value="${label.type}" th:text="${label.type}"></option>
+                                                        </select>
 
-                                                            <div th:if="${record.id == 0}"
-                                                                 class="input-append date" id="datepicker_new" data-date-format="yyyy-mm-dd">
-                                                                <input th:value="${record.addDate}" th:name="addDate" th:id="addDate"
-                                                                       class="form-control mb-4 col-8" size="16" type="text"/>
-                                                                <span class="add-on"><i class="icon-th"></i></span>
-                                                            </div>
+                                                        <div class="input-append date" id="datepicker_update" data-date-format="yyyy-mm-dd">
+                                                            <input th:value="${record.addDate}" th:name="addDate" th:id="addDate"
+                                                                   class="form-control mb-4 col-8" size="16" type="text"/>
+                                                            <span class="add-on"><i class="icon-th"></i></span>
+                                                        </div>
 
-                                                            <div th:unless="${record.id == 0}"
-                                                                 class="input-append date" id="datepicker_update" data-date-format="yyyy-mm-dd">
-                                                                <input th:value="${record.addDate}" th:name="addDate" th:id="addDate"
-                                                                       class="form-control mb-4 col-8" size="16" type="text"/>
-                                                                <span class="add-on"><i class="icon-th"></i></span>
-                                                            </div>
-
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                <button type="submit" class="btn btn-primary">Save changes</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
-                                    </form>
+                                    </div>
 
                                     <!-- Delete -->
                                     <form action="#" th:action="@{/record/delete}" method="POST">
@@ -247,10 +360,56 @@
                                     </form>
 
                                     <!-- Add label -->
-                                    <form action="#" th:action="@{/tag/showFormForAdd}" method="POST">
-                                        <input type="hidden" name="recordId" th:value="${record.id}" />
-                                        <button type="submit" class="btn btn-sm btn-outline-secondary ml-2">Add label</button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary ml-2"
+                                            data-toggle="modal" data-target="#addLabel"
+                                            th:attrappend="data-target=${record.id}">
+                                        Add label
+                                    </button>
+
+                                    <!-- Add label modal -->
+                                    <div class="modal fade" id="addLabel"
+                                         tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true"
+                                         th:attrappend="id=${record.id}">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="updateModalLabel">Add Label</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <ul class="nav nav-tabs" >
+                                                        <li class="nav-item" th:each="field : ${labelByField.keySet()}">
+                                                            <a class="nav-link" th:classappend="${field == 'state'} ? 'active'"
+                                                               th:href="@{'#'+ ${field} + '-' + ${record.id}}"
+                                                               data-toggle="tab"><label th:text="${field}"></label></a>
+                                                        </li>
+                                                    </ul>
+
+                                                    <div class="tab-content mt-3" >
+                                                        <div class="tab-pane fade" th:classappend="${field == 'state'} ? 'show active'"
+                                                             th:id="${field} + '-' + ${record.id}" th:each="field : ${labelByField.keySet()}" >
+                                                            <form action="#" th:action="@{/tag/save}" method="POST" th:object="${tagForm}">
+
+                                                                <!-- Add hidden form field to handle update -->
+                                                                <input type="hidden" th:value="${record.id}" th:name="recordId" th:id="recordId"/>
+
+                                                                <select th:field="*{newLabelId}"
+                                                                        class="form-control mb-4 col-8">
+                                                                    <option th:value="0" disabled selected th:text="'Please select a ' + ${field}"></option>
+                                                                    <option th:each="label : ${labelByField.get(field)}"
+                                                                            th:value="${label.id}" th:text="${label.type}"></option>
+                                                                </select>
+
+                                                                <button type="submit" class="btn btn-info col-2">Save</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <small class="text-muted" th:text="${record.addDate}"></small>
                             </div>
@@ -263,16 +422,8 @@
 
     <script>
         $('#datepicker_new').datepicker("setDate", new Date());
-        $('#datepicker_update').datepicker();
+        $('[id^=datepicker_update]').datepicker();
     </script>
-
-<!--    <script>-->
-<!--        $('.update-modal').on('click', function(e){-->
-<!--            e.preventDefault();-->
-<!--            $('#updateModal').modal('show').find('.modal-content').load('record-form-tmp.html');-->
-<!--        });-->
-<!--    </script>-->
-
 
 </main>
 
@@ -285,7 +436,5 @@
         <p><a href="https://github.com/jasonyanwenl/codingmanager">View source code</a></p>
     </div>
 </footer>
-<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>-->
-<!--<script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="/js/bootstrap.bundle.js"></script>-->
 </body>
 </html>

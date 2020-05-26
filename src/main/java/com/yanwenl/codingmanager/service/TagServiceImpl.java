@@ -135,6 +135,25 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public void deleteByRecordIdAndLabelId(int rid, int lid) {
+        List<Tag> tags = tagRepository.findByRecordIdAndLabelId(rid, lid);
+
+        if (tags == null || tags.size() == 0) {
+            throw new ResourceNotFoundException(
+                    "Tag not found by recordId: " + rid
+                            + " and labelId: " + lid);
+        } else if (tags.size() > 1) {
+            throw new ResourceDuplicateException(
+                    "Multiple tags found by recordId: " + rid
+                            + " and labelId: " + lid);
+        } else {
+            Tag tag = tags.get(0);
+            tagRepository.delete(tag);
+        }
+    }
+
+
+    @Override
     public Map<Integer, List<Integer>> findLabelGroupByRecord() {
         List<Tag> tags = tagRepository.findAll();
 

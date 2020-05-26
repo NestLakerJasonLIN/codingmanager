@@ -27,5 +27,7 @@ public interface TagService {
 
     void deleteByLabelId(int lid);
 
+    void deleteByRecordIdAndLabelId(int rid, int lid);
+
     Map<Integer, List<Integer>> findLabelGroupByRecord();
 }

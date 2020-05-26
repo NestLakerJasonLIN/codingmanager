@@ -3,6 +3,7 @@ package com.yanwenl.codingmanager.controller;
 import com.yanwenl.codingmanager.model.Label;
 import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.model.Tag;
+import com.yanwenl.codingmanager.model.TagForm;
 import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
 import com.yanwenl.codingmanager.service.TagService;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +67,7 @@ public class RecordController extends RecordBaseController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("recordx") Record record) {
+    public String save(@ModelAttribute("newRecord") Record record) {
         log.debug("Try to save record: " + record);
 
         if (record.getId() == 0) {
@@ -80,6 +82,8 @@ public class RecordController extends RecordBaseController {
     @PostMapping("/delete")
     public String delete(@RequestParam("recordId") int id) {
         recordService.deleteById(id);
+
+        tagService.deleteByRecordId(id);
 
         return "redirect:/record";
     }
@@ -115,8 +119,27 @@ public class RecordController extends RecordBaseController {
         model.addAttribute("labelGroupByFieldGroupByRecord",
                 labelGroupByFieldGroupByRecord);
         model.addAttribute("levelLabels", levelLabels);
-        model.addAttribute("newRecord", new Record()); // Used for update
+        model.addAttribute("newRecord", new Record());
+        model.addAttribute("tagForm", new TagForm());
+        addLabelAttributesToModel(model);
 
         return "list-records";
+    }
+
+    private void addLabelAttributesToModel(Model model) {
+        List<String> fields = labelService.findDistinctFields();
+        Map<String, List<Label>> labelByField = new HashMap<>();
+
+        for (String field : fields) {
+            // Skip level labels
+            if (field.equals("level")) continue;
+
+            List<Label> list = labelService.findByField(field);
+            labelByField.put(field, list);
+        }
+
+        log.debug("Find labelByField: " + labelByField);
+
+        model.addAttribute("labelByField", labelByField);
     }
 }
