@@ -38,7 +38,6 @@ public class RecordServiceImpl implements RecordService {
                     "Record id not found: " + id);
         } else {
             Record record = result.get();
-            log.debug("findById return: " + record);
             return record;
         }
     }

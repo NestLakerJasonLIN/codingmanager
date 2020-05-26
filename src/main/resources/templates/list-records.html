@@ -7,10 +7,12 @@
     <meta name="generator" content="Jekyll v4.0.1">
     <title>Record Directory</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/album/">
-
-    <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap-datepicker.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script src="/js/bootstrap-datepicker.min.js"></script>
 
     <style>
         .bd-placeholder-img {
@@ -40,6 +42,11 @@
             background-repeat: no-repeat;
             background-size: cover;
         }
+
+        .iconic-plus {
+            width: 15px; height:15px;
+            fill: #f00;
+        }
     </style>
     <!-- Custom styles for this template -->
     <link href="/css/main.css" rel="stylesheet">
@@ -51,14 +58,13 @@
             <div class="row">
                 <div class="col-sm-8 col-md-7 py-4">
                     <h4 class="text-white">About</h4>
-                    <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+                    <p class="text-muted">Coding manager will help you manage your coding practice using flexible tagging feature. You can easily add coding questions with various tags. Happy coding!</p>
                 </div>
                 <div class="col-sm-4 offset-md-1 py-4">
                     <h4 class="text-white">Contact</h4>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                        <li><a href="#" class="text-white">Like on Facebook</a></li>
-                        <li><a href="#" class="text-white">Email me</a></li>
+                        <li><a href="mailto:lyw1124278064@gmail.com" class="text-white">Email me</a></li>
+                        <li><a href="https://github.com/jasonyanwenl/codingmanager" class="text-white">Source code</a></li>
                     </ul>
                 </div>
             </div>
@@ -82,13 +88,17 @@
     <section class="jumbotron text-center bg">
     </section>
 
+    <!-- new record & search bar -->
     <section class="text-center mt-3">
         <div class="container d-flex align-items-center">
             <p>
+                <!-- new record -->
                 <a th:href="@{/record/showFormForAdd}"
-                   class="btn btn-primary my-2">
-                    New record
+                   class="btn btn-outline-secondary my-2">
+                    <img src="/images/plus.svg" alt="plus icon" class="iconic-plus">
                 </a>
+
+                <!-- search bar -->
                 <form action="#" th:action="@{/record/search}" method="POST">
                     <div class="input-group mb-3">
                         <input name="keyword"
@@ -106,12 +116,13 @@
         <div class="container">
 
             <div class="row">
-                <div class="col-md-4" th:each="record : ${records}">
+                <div class="col-md-4" th:each="record,recordStat : ${records}">
                     <div class="card mb-4 shadow-sm">
                         <div class="card-body">
                             <a class="card-text" th:href="${record.link}" th:text="${record.number} + '. ' + ${record.name}"></a>
                             <p class="badge badge-pill badge-secondary mr-2 mb-4 mt-2" th:text="${record.level}"></p>
 
+                            <!-- All tags-->
                             <div th:if="${labelGroupByFieldGroupByRecord.containsKey(record)}"
                                  th:with="labels=${labelGroupByFieldGroupByRecord.get(record)}">
                                 <div th:each="field : ${labels.keySet()}">
@@ -146,19 +157,100 @@
                                 </div>
                             </div>
 
+                            <!-- All buttons-->
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <div class="btn-group">
-                                        <form action="#" th:action="@{/record/showFormForUpdate}" method="POST">
-                                            <input type="hidden" name="recordId" th:value="${record.id}" />
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
-                                        </form>
-                                        <form action="#" th:action="@{/record/delete}" method="POST">
-                                            <input type="hidden" name="recordId" th:value="${record.id}" />
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary ml-2"
-                                                    onclick="if (!(confirm('Are you sure you want to delete this record?'))) return false">
-                                                Delete
-                                            </button>
-                                        </form>
+                                    <!-- Update -->
+                                    <form action="#" th:action="@{/record/save}" method="POST">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                data-toggle="modal" data-target="#updateModal"
+                                                th:attrappend="data-target=${record.id}">
+                                            Update
+                                        </button>
+<!--                                        <button type="button" class="btn btn-sm btn-outline-secondary update-modal"-->
+<!--                                                href="/html/record-form.html">-->
+<!--                                            Update-->
+<!--                                        </button>-->
+
+                                        <!-- Update modal -->
+                                        <div class="modal fade" id="updateModal"
+                                             tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true"
+                                             th:attrappend="id=${record.id}">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="updateModalLabel">Update Record</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
+                                                            <!-- Add hidden form field to handle update -->
+                                                            <input type="hidden" th:value="${record.id}" th:name="id" th:id="id"/>
+
+                                                            <input type="text" th:value="${record.number}" th:name="number" th:id="number"
+                                                                   class="form-control mb-4 col-8" placeholder="Number">
+
+                                                            <input type="text" th:value="${record.name}" th:name="name" th:id="name"
+                                                                   class="form-control mb-4 col-8" placeholder="Name">
+
+                                                            <input type="text" th:value="${record.link}" th:name="link" th:id="link"
+                                                                   class="form-control mb-4 col-8" placeholder="Link">
+
+                                                            <select th:value="${record.level}" th:name="level" th:id="level"
+                                                                    class="form-control mb-4 col-8">
+                                                                <option th:if="${record.id == 0}"
+                                                                        th:value="0"
+                                                                        disabled selected
+                                                                        th:text="'Please select a level'"></option>
+                                                                <option th:unless="${record.id == 0}" hidden selected
+                                                                        th:value="${record.level}"
+                                                                        th:text="${record.level}">
+                                                                </option>
+                                                                <option th:each="label : ${levelLabels}"
+                                                                        th:value="${label.type}" th:text="${label.type}"></option>
+                                                            </select>
+
+                                                            <div th:if="${record.id == 0}"
+                                                                 class="input-append date" id="datepicker_new" data-date-format="yyyy-mm-dd">
+                                                                <input th:value="${record.addDate}" th:name="addDate" th:id="addDate"
+                                                                       class="form-control mb-4 col-8" size="16" type="text"/>
+                                                                <span class="add-on"><i class="icon-th"></i></span>
+                                                            </div>
+
+                                                            <div th:unless="${record.id == 0}"
+                                                                 class="input-append date" id="datepicker_update" data-date-format="yyyy-mm-dd">
+                                                                <input th:value="${record.addDate}" th:name="addDate" th:id="addDate"
+                                                                       class="form-control mb-4 col-8" size="16" type="text"/>
+                                                                <span class="add-on"><i class="icon-th"></i></span>
+                                                            </div>
+
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- Delete -->
+                                    <form action="#" th:action="@{/record/delete}" method="POST">
+                                        <input type="hidden" name="recordId" th:value="${record.id}" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary ml-2"
+                                                onclick="if (!(confirm('Are you sure you want to delete this record?'))) return false">
+                                            Delete
+                                        </button>
+                                    </form>
+
+                                    <!-- Add label -->
+                                    <form action="#" th:action="@{/tag/showFormForAdd}" method="POST">
+                                        <input type="hidden" name="recordId" th:value="${record.id}" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary ml-2">Add label</button>
+                                    </form>
                                 </div>
                                 <small class="text-muted" th:text="${record.addDate}"></small>
                             </div>
@@ -169,6 +261,19 @@
         </div>
     </div>
 
+    <script>
+        $('#datepicker_new').datepicker("setDate", new Date());
+        $('#datepicker_update').datepicker();
+    </script>
+
+<!--    <script>-->
+<!--        $('.update-modal').on('click', function(e){-->
+<!--            e.preventDefault();-->
+<!--            $('#updateModal').modal('show').find('.modal-content').load('record-form-tmp.html');-->
+<!--        });-->
+<!--    </script>-->
+
+
 </main>
 
 <footer class="text-muted">
@@ -176,10 +281,11 @@
         <p class="float-right">
             <a href="#">Back to top</a>
         </p>
-        <p>Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-        <p>New to Bootstrap? <a href="https://getbootstrap.com/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+        <p>Coding manager developed by <a href="https://github.com/jasonyanwenl">jasonyanwenl</a></p>
+        <p><a href="https://github.com/jasonyanwenl/codingmanager">View source code</a></p>
     </div>
 </footer>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="/js/bootstrap.bundle.js"></script></body>
+<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>-->
+<!--<script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="/js/bootstrap.bundle.js"></script>-->
+</body>
 </html>

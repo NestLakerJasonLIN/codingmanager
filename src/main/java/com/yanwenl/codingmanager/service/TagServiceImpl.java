@@ -39,7 +39,6 @@ public class TagServiceImpl implements TagService {
                     "tag id not found: " + id);
         } else {
             Tag label = result.get();
-            log.debug("findById return: " + label);
             return label;
         }
     }

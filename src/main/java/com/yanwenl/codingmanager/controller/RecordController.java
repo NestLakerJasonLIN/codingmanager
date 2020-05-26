@@ -65,7 +65,7 @@ public class RecordController extends RecordBaseController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("record") Record record) {
+    public String save(@ModelAttribute("recordx") Record record) {
         log.debug("Try to save record: " + record);
 
         if (record.getId() == 0) {
@@ -109,10 +109,13 @@ public class RecordController extends RecordBaseController {
     private String doGet(List<Record> records, Model model) {
         Map<Record, Map<String, List<Label>>>
                 labelGroupByFieldGroupByRecord = findLabelGroupByRecord();
+        List<Label> levelLabels = labelService.findByField("level");
 
         model.addAttribute("records", records);
         model.addAttribute("labelGroupByFieldGroupByRecord",
                 labelGroupByFieldGroupByRecord);
+        model.addAttribute("levelLabels", levelLabels);
+        model.addAttribute("newRecord", new Record()); // Used for update
 
         return "list-records";
     }

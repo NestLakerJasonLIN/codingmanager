@@ -38,7 +38,6 @@ public class LabelServiceImpl implements LabelService {
                     "label id not found: " + id);
         } else {
             Label label = result.get();
-            log.debug("findById return: " + label);
             return label;
         }
     }

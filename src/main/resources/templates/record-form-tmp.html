@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div class="modal-header">
+    <h5 class="modal-title" id="updateModalLabel">Update Record</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
+        <!-- Add hidden form field to handle update -->
+        <input th:text="${records[0].id}">
+        <input type="hidden" th:value="${record.id}" th:name="id" th:id="id"/>
+
+        <input type="text" th:value="${record.number}" th:name="number" th:id="number"
+               class="form-control mb-4 col-8" placeholder="Number">
+
+        <input type="text" th:value="${record.name}" th:name="name" th:id="name"
+               class="form-control mb-4 col-8" placeholder="Name">
+
+        <input type="text" th:value="${record.link}" th:name="link" th:id="link"
+               class="form-control mb-4 col-8" placeholder="Link">
+
+        <select th:value="${record.level}" th:name="level" th:id="level"
+                class="form-control mb-4 col-8">
+            <option th:if="${record.id == 0}"
+                    th:value="0"
+                    disabled selected
+                    th:text="'Please select a level'"></option>
+            <option th:unless="${record.id == 0}" hidden selected
+                    th:value="${record.level}"
+                    th:text="${record.level}">
+            </option>
+            <option th:each="label : ${levelLabels}"
+                    th:value="${label.type}" th:text="${label.type}"></option>
+        </select>
+
+        <div th:if="${record.id == 0}"
+             class="input-append date" id="datepicker_new" data-date-format="yyyy-mm-dd">
+            <input th:value="${record.addDate}" th:name="addDate" th:id="addDate"
+                   class="form-control mb-4 col-8" size="16" type="text"/>
+            <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+
+        <div th:unless="${record.id == 0}"
+             class="input-append date" id="datepicker_update" data-date-format="yyyy-mm-dd">
+            <input th:value="${record.addDate}" th:name="addDate" th:id="addDate"
+                   class="form-control mb-4 col-8" size="16" type="text"/>
+            <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+</div>
