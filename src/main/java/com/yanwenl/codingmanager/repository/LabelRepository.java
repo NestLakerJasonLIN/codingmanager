@@ -8,7 +8,11 @@ import java.util.List;
 
 public interface LabelRepository extends JpaRepository<Label, Integer> {
 
+    List<Label> findLabelByUserName(String userName);
+
     List<Label> findLabelByField(String field);
+
+    List<Label> findLabelByFieldAndUserName(String field, String userName);
 
     List<Label> findLabelByType(String type);
 

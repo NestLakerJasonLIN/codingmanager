@@ -3,6 +3,7 @@ package com.yanwenl.codingmanager.service;
 import com.yanwenl.codingmanager.exception.InvalidParametersException;
 import com.yanwenl.codingmanager.exception.ResourceDuplicateException;
 import com.yanwenl.codingmanager.exception.ResourceNotFoundException;
+import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.model.Tag;
 import com.yanwenl.codingmanager.repository.TagRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -154,8 +155,13 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public Map<Integer, List<Integer>> findLabelGroupByRecord() {
-        List<Tag> tags = tagRepository.findAll();
+    public Map<Integer, List<Integer>> findLabelGroupByRecord(List<Record> records) {
+        List<Tag> tags = new ArrayList<>();
+
+        for (Record record : records) {
+            List<Tag> tagForOneRecord = tagRepository.findByRecordId(record.getId());
+            tags.addAll(tagForOneRecord);
+        }
 
         Map<Integer, List<Integer>> recordIdToLabelIds = new HashMap<>();
 

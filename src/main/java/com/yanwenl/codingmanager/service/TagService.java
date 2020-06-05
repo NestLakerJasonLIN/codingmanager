@@ -1,5 +1,6 @@
 package com.yanwenl.codingmanager.service;
 
+import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.model.Tag;
 
 import java.util.List;
@@ -29,5 +30,5 @@ public interface TagService {
 
     void deleteByRecordIdAndLabelId(int rid, int lid);
 
-    Map<Integer, List<Integer>> findLabelGroupByRecord();
+    Map<Integer, List<Integer>> findLabelGroupByRecord(List<Record> records);
 }

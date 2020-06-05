@@ -30,4 +30,9 @@ public class Record {
 
     @Column(name="level")
     private String level;
+
+    @Column(name="user_name")
+    private String userName;
+
+    // TODO: use oneToMany for all labels of this record
 }

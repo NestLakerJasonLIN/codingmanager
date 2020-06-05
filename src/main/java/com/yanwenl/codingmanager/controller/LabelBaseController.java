@@ -3,7 +3,6 @@ package com.yanwenl.codingmanager.controller;
 import com.yanwenl.codingmanager.model.Label;
 import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.TagService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +17,11 @@ public class LabelBaseController extends BaseController {
         this.tagService = tagService;
     }
 
-    List<Label> getLabelsConditional(int id, String field) {
+    List<Label> getLabelsConditional(int id, String field, String userName) {
         List<Label> labels = new ArrayList<>();
 
         if (id < 0 && field.isEmpty()) {
-            labels = labelService.findAll();
+            labels = labelService.findByUserName(userName);
         } else if (id > 0) {
             labels.add(labelService.findById(id));
         } else {

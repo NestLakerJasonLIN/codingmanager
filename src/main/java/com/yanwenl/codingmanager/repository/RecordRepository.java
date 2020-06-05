@@ -9,4 +9,6 @@ import java.util.List;
 public interface RecordRepository extends JpaRepository<Record, Integer> {
 
     List<Record> findRecordByNumber(int number);
+
+    List<Record> findRecordByUserName(String userName);
 }

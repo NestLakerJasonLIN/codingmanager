@@ -30,6 +30,11 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
+    public List<Label> findByUserName(String userName) {
+        return labelRepository.findLabelByUserName(userName);
+    }
+
+    @Override
 	public Label findById(int id) {
         Optional<Label> result = labelRepository.findById(id);
 
@@ -50,6 +55,11 @@ public class LabelServiceImpl implements LabelService {
     @Override
 	public List<Label> findByField(String field) {
         return labelRepository.findLabelByField(field);
+    }
+
+    @Override
+    public List<Label> findByField(String field, String userName) {
+        return labelRepository.findLabelByFieldAndUserName(field, userName);
     }
 
     @Override

@@ -9,6 +9,8 @@ import com.yanwenl.codingmanager.service.RecordService;
 import com.yanwenl.codingmanager.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +34,16 @@ public class RecordController extends RecordBaseController {
 
     @GetMapping("")
     public String get(Model model,
-                             @RequestParam(required = false,
-                                     defaultValue = "-1") int id,
-                             @RequestParam(required = false,
-                                     defaultValue = "-1") int number) {
-        List<Record> records = getRecordsConditional(id, number);
-        return doGet(records, model);
+                      @RequestParam(required = false,
+                              defaultValue = "-1") int id,
+                      @RequestParam(required = false,
+                              defaultValue = "-1") int number,
+                      @AuthenticationPrincipal User activeUser) {
+        log.debug("GET with active user: " + activeUser);
+
+        List<Record> records = getRecordsConditional(id, number, activeUser.getUsername());
+
+        return doGet(records, model, activeUser.getUsername());
     }
 
     @GetMapping("/showFormForAdd")
@@ -67,11 +73,12 @@ public class RecordController extends RecordBaseController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("newRecord") Record record) {
+    public String save(@ModelAttribute("newRecord") Record record,
+                       @AuthenticationPrincipal User activeUser) {
         log.debug("Try to save record: " + record);
 
         if (record.getId() == 0) {
-            recordService.add(record);
+            recordService.add(record, activeUser.getUsername());
         } else {
             recordService.update(record);
         }
@@ -91,7 +98,8 @@ public class RecordController extends RecordBaseController {
     // TODO: Currently only support search by label type
     @PostMapping("/search")
     public String search(Model model,
-                         @RequestParam("keyword") String keyword) {
+                         @RequestParam("keyword") String keyword,
+                         @AuthenticationPrincipal User activeUser) {
         log.debug("Search by keyword: " + keyword);
 
         List<Label> labels = labelService.findByType(keyword);
@@ -107,26 +115,28 @@ public class RecordController extends RecordBaseController {
             }
         }
 
-        return doGet(records, model);
+        return doGet(records, model, activeUser.getUsername());
     }
 
-    private String doGet(List<Record> records, Model model) {
+    private String doGet(List<Record> records, Model model, String userName) {
         Map<Record, Map<String, List<Label>>>
-                labelGroupByFieldGroupByRecord = findLabelGroupByRecord();
+                labelGroupByFieldGroupByRecord = findLabelGroupByRecord(records);
         List<Label> levelLabels = labelService.findByField("level");
 
         model.addAttribute("records", records);
         model.addAttribute("labelGroupByFieldGroupByRecord",
                 labelGroupByFieldGroupByRecord);
         model.addAttribute("levelLabels", levelLabels);
-        model.addAttribute("newRecord", new Record());
+        Record newRecord = new Record();
+        newRecord.setUserName(userName);
+        model.addAttribute("newRecord", newRecord);
         model.addAttribute("tagForm", new TagForm());
-        addLabelAttributesToModel(model);
+        addLabelAttributesToModel(model, userName);
 
         return "list-records";
     }
 
-    private void addLabelAttributesToModel(Model model) {
+    private void addLabelAttributesToModel(Model model, String userName) {
         List<String> fields = labelService.findDistinctFields();
         Map<String, List<Label>> labelByField = new HashMap<>();
 
@@ -134,7 +144,7 @@ public class RecordController extends RecordBaseController {
             // Skip level labels
             if (field.equals("level")) continue;
 
-            List<Label> list = labelService.findByField(field);
+            List<Label> list = labelService.findByField(field, userName);
             labelByField.put(field, list);
         }
 

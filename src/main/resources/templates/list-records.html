@@ -68,7 +68,12 @@
                     <a class="nav-item nav-link" th:href="@{/label}">Labels</a>
                 </div>
             </div>
+            <!-- logout button -->
+            <form th:action="@{/logout}" method="POST">
+                <button class="btn btn-outline-light ml-auto mr-1" type="submit">Logout</button>
+            </form>
         </div>
+
     </div>
 </header>
 
@@ -100,8 +105,8 @@
                             </div>
                             <div class="modal-body">
                                 <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
-                                    <!-- Add hidden form field to handle update -->
                                     <input type="hidden" th:field="*{id}"/>
+                                    <input type="hidden" th:field="*{userName}"/>
 
                                     <input type="text" th:field="*{number}"
                                            class="form-control mb-4 col-8" placeholder="Number">
@@ -156,7 +161,6 @@
     <!-- Record card -->
     <div class="album py-5 bg-light">
         <div class="container">
-
             <div class="row">
                 <div class="col-md-4" th:each="record,recordStat : ${records}">
                     <div class="card mb-4 shadow-sm">
@@ -303,6 +307,7 @@
                                                     <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
                                                         <!-- Add hidden form field to handle update -->
                                                         <input type="hidden" th:value="${record.id}" th:name="id" th:id="id"/>
+                                                        <input type="hidden" th:value="${session.user.getUserName()}" th:name="userName" th:id="userName"/>
 
                                                         <input type="text" th:value="${record.number}" th:name="number" th:id="number"
                                                                class="form-control mb-4 col-8" placeholder="Number">

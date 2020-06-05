@@ -25,6 +25,9 @@ public class Label {
     @Column(name="type")
     private String type;
 
+    @Column(name="user_name")
+    private String userName;
+
     public void setField(String field) {
         this.field = field.toLowerCase();
     }

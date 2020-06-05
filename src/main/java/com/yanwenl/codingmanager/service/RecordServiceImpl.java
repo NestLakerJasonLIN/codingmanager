@@ -6,6 +6,8 @@ import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.repository.RecordRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,6 +32,11 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
+    public List<Record> findByUserName(String userName) {
+        return recordRepository.findRecordByUserName(userName);
+    }
+
+    @Override
     public Record findById(int id) {
         Optional<Record> result = recordRepository.findById(id);
 
@@ -49,15 +56,19 @@ public class RecordServiceImpl implements RecordService {
 
     // Currently allow duplicate add
     @Override
-    public void add(Record record) {
+    public void add(Record record, String userName) {
         // Skip existed record with same number
         int number = record.getNumber();
 
         List<Record> existedRecords = recordRepository.findRecordByNumber(number);
 
         if (existedRecords != null && existedRecords.size() > 0) {
-            log.warn("Record already existed (do not add): " + record);
-            return;
+            for (Record existedRecord : existedRecords) {
+                if (existedRecord.getUserName().equals(userName)) {
+                    log.warn("Record already existed (do not add): " + record);
+                    return;
+                }
+            }
         }
 
         log.info("Record is added: " + record);

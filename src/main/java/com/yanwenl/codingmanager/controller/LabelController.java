@@ -5,6 +5,8 @@ import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +26,12 @@ public class LabelController extends LabelBaseController {
 
     @GetMapping("")
     public String get(Model model,
-                             @RequestParam(required = false,
+                      @RequestParam(required = false,
                                      defaultValue = "-1") int id,
-                             @RequestParam(required = false,
-                                     defaultValue = "") String field) {
-
-        List<Label> labels = getLabelsConditional(id, field);
+                      @RequestParam(required = false,
+                                     defaultValue = "") String field,
+                      @AuthenticationPrincipal User activeUser) {
+        List<Label> labels = getLabelsConditional(id, field, activeUser.getUsername());
         model.addAttribute("labels", labels);
         return "list-labels";
     }
@@ -55,7 +57,10 @@ public class LabelController extends LabelBaseController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("label") Label label) {
+    public String save(@ModelAttribute("label") Label label,
+                       @AuthenticationPrincipal User activeUser) {
+        label.setUserName(activeUser.getUsername());
+
         log.debug("Try to save label: " + label);
 
         // TODO: case check

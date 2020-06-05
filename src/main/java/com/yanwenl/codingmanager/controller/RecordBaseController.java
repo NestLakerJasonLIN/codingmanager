@@ -27,12 +27,12 @@ public abstract class RecordBaseController extends BaseController {
         tagService = theTagService;
     }
 
-    List<Record> getRecordsConditional(int id, int number) {
+    List<Record> getRecordsConditional(int id, int number, String userName) {
         log.debug("getRecordsConditional: " +
-                "id: " + id + " number: " + number);
+                "id: " + id + " number: " + number + " userName: " + userName);
 
         if (id < 0 && number < 0) {
-            return recordService.findAll();
+            return recordService.findByUserName(userName);
         } else if (id > 0) {
             List<Record> ret = new ArrayList<>();
             ret.add(recordService.findById(id));
@@ -42,9 +42,9 @@ public abstract class RecordBaseController extends BaseController {
         }
     }
 
-    Map<Record, Map<String, List<Label>>> findLabelGroupByRecord() {
+    Map<Record, Map<String, List<Label>>> findLabelGroupByRecord(List<Record> records) {
         Map<Integer, List<Integer>> labelIdGroupByRecordId
-                = tagService.findLabelGroupByRecord();
+                = tagService.findLabelGroupByRecord(records);
         Map<Record, Map<String, List<Label>>>
                 labelGroupByFieldGroupByRecord = new HashMap<>();
 
