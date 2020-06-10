@@ -5,7 +5,6 @@ import java.util.List;
 import com.yanwenl.codingmanager.model.Record;
 import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
-import com.yanwenl.codingmanager.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,9 +20,8 @@ public class RecordRestController extends RecordBaseController {
 
     @Autowired
     public RecordRestController(RecordService theRecordService,
-                            LabelService theLabelService,
-                            TagService tagService) {
-        super(theRecordService, theLabelService, tagService);
+                            LabelService theLabelService) {
+        super(theRecordService, theLabelService);
     }
 
     @GetMapping("/records")

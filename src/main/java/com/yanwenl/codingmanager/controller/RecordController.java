@@ -2,11 +2,9 @@ package com.yanwenl.codingmanager.controller;
 
 import com.yanwenl.codingmanager.model.Label;
 import com.yanwenl.codingmanager.model.Record;
-import com.yanwenl.codingmanager.model.Tag;
-import com.yanwenl.codingmanager.model.TagForm;
+import com.yanwenl.codingmanager.model.RecordLabelForm;
 import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
-import com.yanwenl.codingmanager.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,9 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/record")
@@ -27,9 +23,8 @@ public class RecordController extends RecordBaseController {
 
     @Autowired
     public RecordController(RecordService theRecordService,
-                            LabelService theLabelService,
-                            TagService tagService) {
-        super(theRecordService, theLabelService, tagService);
+                            LabelService theLabelService) {
+        super(theRecordService, theLabelService);
     }
 
     @GetMapping("")
@@ -44,32 +39,6 @@ public class RecordController extends RecordBaseController {
         List<Record> records = getRecordsConditional(id, number, activeUser.getUsername());
 
         return doGet(records, model, activeUser.getUsername());
-    }
-
-    @GetMapping("/showFormForAdd")
-    public String showFormForAdd(Model model) {
-        Record record = new Record();
-
-        List<Label> levelLabels = labelService.findByField("level");
-
-        model.addAttribute("record", record);
-        model.addAttribute("levelLabels", levelLabels);
-
-        log.debug("Model: " + model);
-
-        return "record-form";
-    }
-
-    @PostMapping("/showFormForUpdate")
-    public String showFormForUpdate(Model model, @RequestParam("recordId") int recordId) {
-        Record record = recordService.findById(recordId);
-
-        List<Label> levelLabels = labelService.findByField("level");
-
-        model.addAttribute("record", record);
-        model.addAttribute("levelLabels", levelLabels);
-
-        return "record-form";
     }
 
     @PostMapping("/save")
@@ -90,8 +59,6 @@ public class RecordController extends RecordBaseController {
     public String delete(@RequestParam("recordId") int id) {
         recordService.deleteById(id);
 
-        tagService.deleteByRecordId(id);
-
         return "redirect:/record";
     }
 
@@ -107,49 +74,98 @@ public class RecordController extends RecordBaseController {
         List<Record> records = new ArrayList<>();
 
         for (Label label : labels) {
-            int labelId = label.getId();
-            List<Tag> tags = tagService.findByLabelId(labelId);
-            for (Tag tag : tags) {
-                int recordId = tag.getRecordId();
-                records.add(recordService.findById(recordId));
-            }
+            records.addAll(label.getRecords());
         }
 
         return doGet(records, model, activeUser.getUsername());
     }
 
-    private String doGet(List<Record> records, Model model, String userName) {
-        Map<Record, Map<String, List<Label>>>
-                labelGroupByFieldGroupByRecord = findLabelGroupByRecord(records);
-        List<Label> levelLabels = labelService.findByField("level");
+    @PostMapping("/addLabel")
+    public String addLabel(@ModelAttribute("recordLabelForm")
+                                       RecordLabelForm recordLabelForm) {
+        log.debug("Try to add label with tagForm: " + recordLabelForm);
 
+        int recordId = recordLabelForm.getRecordId();
+
+        Record record = recordService.findById(recordId);
+        Label newLabel = labelService.findById(recordLabelForm.getNewLabelId());
+
+        List<Label> labels = record.getLabels();
+        labels.add(newLabel);
+        record.setLabels(labels);
+
+        recordService.update(record);
+
+        return "redirect:/record";
+    }
+
+    // TODO: remove update label feature
+    @PostMapping("/updateLabel")
+    public String updateLabel(@ModelAttribute("recordLabelForm")
+                                          RecordLabelForm recordLabelForm) {
+        log.debug("Try to update label with form: " + recordLabelForm);
+
+        int recordId = recordLabelForm.getRecordId();
+
+        Record record = recordService.findById(recordId);
+        Label newLabel = labelService.findById(recordLabelForm.getNewLabelId());
+
+        int insertIdx = -1;
+
+        for (int i=0; i<record.getLabels().size(); i++) {
+            if (record.getLabels().get(i).getId() == recordLabelForm.getOldLabelId()) {
+                insertIdx = i;
+                break;
+            }
+        }
+
+        record.getLabels().set(insertIdx, newLabel);
+
+        recordService.update(record);
+
+        return "redirect:/record";
+    }
+
+    @PostMapping("/deleteLabel")
+    public String deleteLabel(@RequestParam("recordId") int recordId,
+                         @RequestParam("labelId") int labelId) {
+        log.debug("Try to delete tag with record Id and label Id: "
+                + recordId + " : " + labelId);
+
+        Record record = recordService.findById(recordId);
+        int deleteIdx = -1;
+
+        for (int i=0; i<record.getLabels().size(); i++) {
+            if (record.getLabels().get(i).getId() == labelId) {
+                deleteIdx = i;
+                break;
+            }
+        }
+
+        record.getLabels().remove(deleteIdx);
+
+        recordService.update(record);
+
+        return "redirect:/record";
+    }
+
+    private String doGet(List<Record> records, Model model, String userName) {
         model.addAttribute("records", records);
-        model.addAttribute("labelGroupByFieldGroupByRecord",
-                labelGroupByFieldGroupByRecord);
-        model.addAttribute("levelLabels", levelLabels);
+
+        model.addAttribute("labelsGroupByFieldGroupByRecord",
+                recordService.groupLabelsByField(records));
+
+        model.addAttribute("levelLabels", labelService.findByField("level"));
+
         Record newRecord = new Record();
         newRecord.setUserName(userName);
         model.addAttribute("newRecord", newRecord);
-        model.addAttribute("tagForm", new TagForm());
-        addLabelAttributesToModel(model, userName);
+
+        model.addAttribute("recordLabelForm", new RecordLabelForm());
+
+        model.addAttribute("labelByField",
+                labelService.findByUserNameGroupByField(userName));
 
         return "list-records";
-    }
-
-    private void addLabelAttributesToModel(Model model, String userName) {
-        List<String> fields = labelService.findDistinctFields();
-        Map<String, List<Label>> labelByField = new HashMap<>();
-
-        for (String field : fields) {
-            // Skip level labels
-            if (field.equals("level")) continue;
-
-            List<Label> list = labelService.findByField(field, userName);
-            labelByField.put(field, list);
-        }
-
-        log.debug("Find labelByField: " + labelByField);
-
-        model.addAttribute("labelByField", labelByField);
     }
 }

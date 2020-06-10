@@ -3,14 +3,13 @@ package com.yanwenl.codingmanager.model;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "label")
 @Data
-@ToString
 public class Label {
 
     @Id
@@ -28,7 +27,25 @@ public class Label {
     @Column(name="user_name")
     private String userName;
 
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinTable(name = "record_label",
+            joinColumns = @JoinColumn(name = "label_id"),
+            inverseJoinColumns = @JoinColumn(name = "record_id"))
+    private List<Record> records;
+
     public void setField(String field) {
         this.field = field.toLowerCase();
+    }
+
+    @Override
+    public String toString() {
+        return "Label{" +
+                "id=" + id +
+                ", field='" + field + '\'' +
+                ", type='" + type + '\'' +
+                ", userName='" + userName + '\'' +
+                '}';
     }
 }

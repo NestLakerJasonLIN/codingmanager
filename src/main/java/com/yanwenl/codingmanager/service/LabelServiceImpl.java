@@ -1,5 +1,6 @@
 package com.yanwenl.codingmanager.service;
 
+import com.yanwenl.codingmanager.common.Utilities;
 import com.yanwenl.codingmanager.exception.InvalidParametersException;
 import com.yanwenl.codingmanager.exception.ResourceNotFoundException;
 import com.yanwenl.codingmanager.model.Label;
@@ -9,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -25,13 +25,19 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-	public List<Label> findAll() {
-        return labelRepository.findAll();
+    public List<Label> findByUserName(String userName) {
+        return labelRepository.findLabelByUserName(userName);
     }
 
     @Override
-    public List<Label> findByUserName(String userName) {
-        return labelRepository.findLabelByUserName(userName);
+    public Map<String, List<Label>> findByUserNameGroupByField(String userName) {
+        List<Label> labels = findByUserName(userName);
+
+        Map<String, List<Label>> labelByField = Utilities.groupLabelsByField(labels);
+
+        log.debug("Find labelByField: " + labelByField);
+
+        return labelByField;
     }
 
     @Override
@@ -48,18 +54,8 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public List<String> findDistinctFields() {
-        return labelRepository.findDistinctFields();
-    }
-
-    @Override
 	public List<Label> findByField(String field) {
         return labelRepository.findLabelByField(field);
-    }
-
-    @Override
-    public List<Label> findByField(String field, String userName) {
-        return labelRepository.findLabelByFieldAndUserName(field, userName);
     }
 
     @Override
@@ -109,6 +105,8 @@ public class LabelServiceImpl implements LabelService {
                             + id);
         } else {
             log.debug("Label is updated: " + id);
+            Label existedLabel = result.get();
+            label.setRecords(existedLabel.getRecords());
 
             // TODO: check duplicate
 

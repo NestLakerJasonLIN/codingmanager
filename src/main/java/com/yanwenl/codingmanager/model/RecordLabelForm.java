@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class TagForm {
+public class RecordLabelForm {
     private int oldLabelId;
     private int newLabelId;
     private int recordId;

@@ -169,8 +169,8 @@
                             <p class="badge badge-pill badge-secondary mr-2 mb-4 mt-2" th:text="${record.level}"></p>
 
                             <!-- All tags-->
-                            <div th:if="${labelGroupByFieldGroupByRecord.containsKey(record)}"
-                                 th:with="labels=${labelGroupByFieldGroupByRecord.get(record)}">
+                            <div th:if="${labelsGroupByFieldGroupByRecord.containsKey(record)}"
+                                 th:with="labels=${labelsGroupByFieldGroupByRecord.get(record)}">
                                 <div th:each="field : ${labels.keySet()}">
                                     <div>
                                         <!-- field -->
@@ -197,7 +197,7 @@
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form action="#" th:action="@{/tag/delete}" method="POST" class="mb-3">
+                                                            <form action="#" th:action="@{/record/deleteLabel}" method="POST" class="mb-3">
                                                                 <input type="hidden" name="recordId" th:value="${record.id}" />
                                                                 <input type="hidden" name="labelId" th:value="${label.id}" />
                                                                 <button type="submit" class="btn btn-danger btn-sm"
@@ -206,7 +206,7 @@
                                                                 </button>
                                                             </form>
 
-                                                            <form action="#" th:action="@{/tag/save}" method="POST" th:object="${tagForm}">
+                                                            <form action="#" th:action="@{/record/updateLabel}" method="POST" th:object="${recordLabelForm}">
                                                                 <!-- Add hidden form field to handle update -->
                                                                 <input type="hidden" th:value="${record.id}" th:name="recordId" th:id="recordId"/>
                                                                 <input type="hidden" th:value="${label.id}" th:name="oldLabelId" th:id="oldLabelId"/>
@@ -248,7 +248,7 @@
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form action="#" th:action="@{/tag/delete}" method="POST" class="mb-3">
+                                                            <form action="#" th:action="@{/record/deleteLabel}" method="POST" class="mb-3">
                                                                 <input type="hidden" name="recordId" th:value="${record.id}" />
                                                                 <input type="hidden" name="labelId" th:value="${label.id}" />
                                                                 <button type="submit" class="btn btn-danger btn-sm"
@@ -257,7 +257,7 @@
                                                                 </button>
                                                             </form>
 
-                                                            <form action="#" th:action="@{/tag/save}" method="POST" th:object="${tagForm}">
+                                                            <form action="#" th:action="@{/record/updateLabel}" method="POST" th:object="${recordLabelForm}">
                                                                 <!-- Add hidden form field to handle update -->
                                                                 <input type="hidden" th:value="${record.id}" th:name="recordId" th:id="recordId"/>
                                                                 <input type="hidden" th:value="${label.id}" th:name="oldLabelId" th:id="oldLabelId"/>
@@ -384,7 +384,7 @@
                                                     <div class="tab-content mt-3" >
                                                         <div class="tab-pane fade" th:classappend="${field == 'state'} ? 'show active'"
                                                              th:id="${field} + '-' + ${record.id}" th:each="field : ${labelByField.keySet()}" >
-                                                            <form action="#" th:action="@{/tag/save}" method="POST" th:object="${tagForm}">
+                                                            <form action="#" th:action="@{/record/addLabel}" method="POST" th:object="${recordLabelForm}">
 
                                                                 <!-- Add hidden form field to handle update -->
                                                                 <input type="hidden" th:value="${record.id}" th:name="recordId" th:id="recordId"/>

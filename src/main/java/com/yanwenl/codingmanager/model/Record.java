@@ -1,14 +1,13 @@
 package com.yanwenl.codingmanager.model;
 
 import lombok.Data;
-import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "record")
 @Data
-@ToString
 public class Record {
 
     @Id
@@ -34,5 +33,24 @@ public class Record {
     @Column(name="user_name")
     private String userName;
 
-    // TODO: use oneToMany for all labels of this record
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinTable(name = "record_label",
+                joinColumns = @JoinColumn(name = "record_id"),
+                inverseJoinColumns = @JoinColumn(name = "label_id"))
+    private List<Label> labels;
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", number=" + number +
+                ", link='" + link + '\'' +
+                ", addDate='" + addDate + '\'' +
+                ", level='" + level + '\'' +
+                ", userName='" + userName + '\'' +
+                '}';
+    }
 }
