@@ -54,7 +54,7 @@ public class LoginController extends BaseController {
             userService.saveUser(user);
             model.addAttribute("successMessage", "Registered successfully");
             model.addAttribute("user", new User());
-            return "registration";
+            return "login";
         }
     }
 
