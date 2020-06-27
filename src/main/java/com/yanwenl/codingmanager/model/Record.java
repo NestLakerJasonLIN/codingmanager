@@ -3,6 +3,8 @@ package com.yanwenl.codingmanager.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -16,9 +18,11 @@ public class Record {
     private int id;
 
     @Column(name="name")
+    @NotEmpty()
     private String name;
 
     @Column(name="number")
+    @NotNull()
     private Integer number;
 
     @Column(name="link")

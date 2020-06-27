@@ -1,8 +1,6 @@
 package com.yanwenl.codingmanager.controller;
 
-import com.yanwenl.codingmanager.model.Label;
-import com.yanwenl.codingmanager.model.Record;
-import com.yanwenl.codingmanager.model.RecordLabelForm;
+import com.yanwenl.codingmanager.model.*;
 import com.yanwenl.codingmanager.service.LabelService;
 import com.yanwenl.codingmanager.service.RecordService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +9,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,15 +43,42 @@ public class RecordController extends RecordBaseController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("newRecord") Record record,
-                       @AuthenticationPrincipal User activeUser) {
-        log.debug("Try to save record: " + record);
+    public @ResponseBody RecordFormValidationResponse save(
+            @Valid @ModelAttribute("newRecord") Record record,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal User activeUser) {
 
-        if (record.getId() == 0) {
-            recordService.add(record, activeUser.getUsername());
+        RecordFormValidationResponse res = new RecordFormValidationResponse();
+
+        if (bindingResult.hasErrors()) {
+            log.debug("Error bind result for record");
+
+            res.setStatus("FAIL");
+            List<FieldError> allErrors = bindingResult.getFieldErrors();
+            final List<RecordFormErrorMessage> errorMessages = new ArrayList<>();
+            for (FieldError objectError : allErrors) {
+                errorMessages.add(
+                        new RecordFormErrorMessage(objectError.getField(),
+                                "Please provide a valid " + objectError.getField().toLowerCase()));
+            }
+            log.debug("Add error: " + errorMessages);
+            res.setErrorMessageList(errorMessages);
         } else {
-            recordService.update(record);
+            res.setStatus("SUCCESS");
+            log.debug("Try to save record: " + record);
+
+            recordService.add(record, activeUser.getUsername());
         }
+        return res;
+    }
+
+    // TODO: need valid for record here
+    @PostMapping("/update")
+    public String update(
+            @ModelAttribute("newRecord") Record record) {
+        log.debug("Try to update record: " + record);
+
+        recordService.update(record);
 
         return "redirect:/record";
     }

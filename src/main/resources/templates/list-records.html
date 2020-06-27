@@ -104,7 +104,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
+                                <div th:object="${newRecord}">
                                     <input type="hidden" th:field="*{id}"/>
                                     <input type="hidden" th:field="*{userName}"/>
 
@@ -136,9 +136,11 @@
 
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                        <button type="submit" class="btn btn-primary" id="save-record">Save changes</button>
                                     </div>
-                                </form>
+
+                                    <div id="generalErrorMessage" class="error-lbl" style="display:none;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -304,7 +306,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="#" th:action="@{/record/save}" method="POST" th:object="${newRecord}">
+                                                    <form action="#" th:action="@{/record/update}" method="POST" th:object="${newRecord}">
                                                         <!-- Add hidden form field to handle update -->
                                                         <input type="hidden" th:value="${record.id}" th:name="id" th:id="id"/>
                                                         <input type="hidden" th:value="${session.user.getUserName()}" th:name="userName" th:id="userName"/>
@@ -417,6 +419,92 @@
     <script>
         $('#datepicker_new').datepicker("setDate", new Date());
         $('[id^=datepicker_update]').datepicker();
+    </script>
+
+    <!-- AJAX LOGIN (POST) -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            clearError();
+
+            $('#save-record').click({isNew: "true"}, clickAction);
+
+            function clickAction(event) {
+                event.preventDefault();
+                console.log(event.data.isNew);
+
+                var number = $("#number").val();
+                var name = $("#name").val();
+                var id = $("#id").val();
+                var link = $("#link").val();
+                var level = $("#level").val();
+                var addDate = $("#addDate").val();
+                var userName = $("#userName").val();
+
+                $.ajax({
+                    type : "POST",
+                    url : "/record/save",
+                    data : "number=" + number + "&name=" + name + "&id=" + id + "&link=" + link + "&level=" + level + "&addDate=" + addDate + "&userName=" + userName,
+                    success : function(response) {
+
+                        if(response.status === 'FAIL') {
+                            showFormError(response.errorMessageList);
+                        } else {
+                            //everything is O.K. reload record page
+                            $('#newRecordModal').modal('hide');
+                            $('#updateModal').modal('hide');
+                            window.location.reload();
+                        }
+                    },
+                    error : function(ex) {
+                        console.log(ex);
+                    }
+                });
+            }
+
+            var numberField = $('#number');
+            var nameField = $('#name');
+            var GeneralErrorField = $('#generalErrorMessage');
+
+            function showFormError(errorVal) {
+                //show error messages that coming from backend and change border to red.
+                for(var i=0; i < errorVal.length; i++) {
+                    if(errorVal[i].fieldName === 'number') {
+                        clearForm();
+                        numberField.attr("placeholder", errorVal[i].message).css("border", " 1px solid red");
+                    }
+                    else if(errorVal[i].fieldName === 'name'){
+                        nameField.val('');
+                        nameField.attr("placeholder", errorVal[i].message).css("border", " 1px solid red");
+                    }
+                    else if(errorVal[i].fieldName === 'FORM FAIL'){
+                        clearForm();
+                        GeneralErrorField.html(errorVal[i].message);
+                    }
+                }
+            }
+            //remove error warning tags and change tips
+            function clearError() {
+                //clear all and return it as default.
+                $('#number').focus(function() {
+                    clearForm();
+                    numberField.css("border", "1px solid lightgrey");
+                    numberField.attr("placeholder", "Record number");
+                });
+                $('#name').focus(function() {
+                    nameField.val('');
+                    nameField.css("border", "1px solid lightgrey");
+                    nameField.attr("placeholder", "Name");
+                });
+            }
+            //clear fields and hide error tag.
+            function clearForm() {
+                numberField.val('');
+                nameField.val('');
+                GeneralErrorField.css("display", "none");
+            }
+
+        });
     </script>
 
 </main>

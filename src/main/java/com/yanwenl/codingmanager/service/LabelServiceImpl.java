@@ -35,8 +35,6 @@ public class LabelServiceImpl implements LabelService {
 
         Map<String, List<Label>> labelByField = Utilities.groupLabelsByField(labels);
 
-        log.debug("Find labelByField: " + labelByField);
-
         return labelByField;
     }
 
